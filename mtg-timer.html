@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .container {
+                padding: 40px;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .dial-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 30px;
+        }
+
+        @media (min-width: 480px) {
+            .dial-container {
+                width: 300px;
+                height: 300px;
+                margin: 0 auto 40px;
+            }
+        }
+
+        svg {
+            transform: rotate(-90deg);
+        }
+
+        .dial-background {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 20;
+        }
+
+        .time-ring {
+            fill: none;
+            stroke: #2196F3;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .overtime-ring {
+            fill: none;
+            stroke: url(#overtimeGradient);
+            stroke-width: 24;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.3s ease, stroke-dasharray 0.3s ease;
+        }
+
+        .overtime-ring.active {
+            opacity: 1;
+        }
+
+        .progress-ring {
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease, stroke 0.3s ease;
+        }
+
+        .progress-ring.on-track {
+            stroke: #4CAF50;
+        }
+
+        .progress-ring.behind {
+            stroke: #FF9800;
+        }
+
+        .progress-ring.far-behind {
+            stroke: #f44336;
+        }
+
+        .percentage-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .time-percent {
+            font-size: 24px;
+            color: #2196F3;
+            margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+        
+        .time-percent.overtime {
+            color: #f44336;
+        }
+
+        .progress-percent {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .progress-percent.on-track {
+            color: #4CAF50;
+        }
+
+        .progress-percent.behind {
+            color: #FF9800;
+        }
+
+        .progress-percent.far-behind {
+            color: #f44336;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-row > div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        label {
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="time"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="time"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: #764ba2;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .status.on-track {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.behind {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status.far-behind {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meeting Progress Tracker</h1>
+        
+        <div class="dial-container">
+            <svg viewBox="0 0 300 300" width="100%" height="100%">
+                <defs>
+                    <linearGradient id="overtimeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f44336;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="150" cy="150" r="130" class="dial-background"></circle>
+                <circle cx="150" cy="150" r="110" class="dial-background"></circle>
+                <circle cx="150" cy="150" r="130" class="time-ring"
+                        stroke-dasharray="0 816.8"
+                        stroke-dashoffset="0"></circle>
+                <circle cx="150" cy="150" r="130" class="overtime-ring"
+                        stroke-dasharray="0 816.8"
+                        stroke-dashoffset="0"></circle>
+                <circle cx="150" cy="150" r="110" class="progress-ring on-track"
+                        stroke-dasharray="0 691.2"
+                        stroke-dashoffset="0"></circle>
+            </svg>
+            <div class="percentage-display">
+                <div class="time-percent" id="timePercentDiv">
+                    <span id="timePercent">0</span>%
+                    <div class="label">Time</div>
+                </div>
+                <div class="progress-percent on-track" id="progressPercentDiv">
+                    <span id="progressPercent">0</span>%
+                    <div class="label">Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="startTime">Start Time</label>
+                    <input type="time" id="startTime" value="08:30">
+                </div>
+                <div class="input-group">
+                    <label for="endTime">End Time</label>
+                    <input type="time" id="endTime" value="09:30">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="progressTotal">Total Progress Items</label>
+                <input type="number" id="progressTotal" min="1" value="10">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-info">
+                    <label for="progressPosition">Progress Position</label>
+                    <span class="slider-value" id="sliderValue">3.5</span>
+                </div>
+                <input type="range" id="progressPosition" min="0" max="10" step="0.5" value="3.5">
+            </div>
+
+            <div class="status on-track" id="status">
+                On Track - Keep up the good pace!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const timeRing = document.querySelector('.time-ring');
+        const overtimeRing = document.querySelector('.overtime-ring');
+        const progressRing = document.querySelector('.progress-ring');
+        const timePercentSpan = document.getElementById('timePercent');
+        const timePercentDiv = document.getElementById('timePercentDiv');
+        const progressPercentSpan = document.getElementById('progressPercent');
+        const progressPercentDiv = document.getElementById('progressPercentDiv');
+        const statusDiv = document.getElementById('status');
+        const sliderValueSpan = document.getElementById('sliderValue');
+        
+        const startTimeInput = document.getElementById('startTime');
+        const endTimeInput = document.getElementById('endTime');
+        const progressTotalInput = document.getElementById('progressTotal');
+        const progressPositionInput = document.getElementById('progressPosition');
+
+        const timeCircumference = 2 * Math.PI * 130;
+        const progressCircumference = 2 * Math.PI * 110;
+
+        function timeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function getCurrentTimeMinutes() {
+            const now = new Date();
+            return now.getHours() * 60 + now.getMinutes();
+        }
+
+        function updateDisplay() {
+            const startMinutes = timeToMinutes(startTimeInput.value);
+            const endMinutes = timeToMinutes(endTimeInput.value);
+            const currentMinutes = getCurrentTimeMinutes();
+            
+            const totalDuration = endMinutes - startMinutes;
+            const elapsed = Math.max(0, currentMinutes - startMinutes);
+            const timeProgress = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
+            
+            const progressTotal = parseFloat(progressTotalInput.value);
+            const progressPosition = parseFloat(progressPositionInput.value);
+            const progressPercent = progressTotal > 0 ? (progressPosition / progressTotal) * 100 : 0;
+            
+            // Handle main time ring (caps at 100%)
+            const mainTimeProgress = Math.min(timeProgress, 100);
+            const timeDasharray = `${(mainTimeProgress / 100) * timeCircumference} ${timeCircumference}`;
+            timeRing.setAttribute('stroke-dasharray', timeDasharray);
+            
+            // Handle overtime ring (shows progress beyond 100%)
+            if (timeProgress > 100) {
+                const overtimeProgress = timeProgress - 100;
+                const overtimeDasharray = `${(overtimeProgress / 100) * timeCircumference} ${timeCircumference}`;
+                overtimeRing.setAttribute('stroke-dasharray', overtimeDasharray);
+                overtimeRing.classList.add('active');
+                timePercentDiv.classList.add('overtime');
+                // Keep main ring filled when overtime
+                timeRing.setAttribute('stroke-dasharray', `${timeCircumference} 0`);
+            } else {
+                overtimeRing.setAttribute('stroke-dasharray', '0 ' + timeCircumference);
+                overtimeRing.classList.remove('active');
+                timePercentDiv.classList.remove('overtime');
+            }
+            
+            const progressDasharray = progressPercent <= 100
+                ? `${(progressPercent / 100) * progressCircumference} ${progressCircumference}`
+                : `${progressCircumference} 0`;
+            progressRing.setAttribute('stroke-dasharray', progressDasharray);
+            
+            timePercentSpan.textContent = Math.round(timeProgress);
+            progressPercentSpan.textContent = Math.round(progressPercent);
+            
+            const difference = progressPercent - timeProgress;
+            
+            progressRing.classList.remove('on-track', 'behind', 'far-behind');
+            progressPercentDiv.classList.remove('on-track', 'behind', 'far-behind');
+            statusDiv.classList.remove('on-track', 'behind', 'far-behind');
+            
+            if (timeProgress > 100) {
+                progressRing.classList.add('far-behind');
+                progressPercentDiv.classList.add('far-behind');
+                statusDiv.classList.add('far-behind');
+                const overtimeMinutes = elapsed - totalDuration;
+                statusDiv.textContent = `Meeting overtime by ${Math.round(overtimeMinutes)} minutes!`;
+            } else if (difference >= -5) {
+                progressRing.classList.add('on-track');
+                progressPercentDiv.classList.add('on-track');
+                statusDiv.classList.add('on-track');
+                statusDiv.textContent = 'On Track - Keep up the good pace!';
+            } else if (difference >= -10) {
+                progressRing.classList.add('behind');
+                progressPercentDiv.classList.add('behind');
+                statusDiv.classList.add('behind');
+                statusDiv.textContent = 'Slightly Behind - Pick up the pace';
+            } else {
+                progressRing.classList.add('far-behind');
+                progressPercentDiv.classList.add('far-behind');
+                statusDiv.classList.add('far-behind');
+                statusDiv.textContent = 'Behind Schedule - Need to accelerate';
+            }
+        }
+
+        function updateSliderMax() {
+            const total = parseFloat(progressTotalInput.value) || 10;
+            progressPositionInput.max = total;
+            progressPositionInput.step = total <= 20 ? 0.5 : 1;
+            
+            if (parseFloat(progressPositionInput.value) > total) {
+                progressPositionInput.value = total;
+                sliderValueSpan.textContent = total;
+            }
+        }
+
+        progressPositionInput.addEventListener('input', (e) => {
+            sliderValueSpan.textContent = e.target.value;
+            updateDisplay();
+        });
+
+        startTimeInput.addEventListener('change', updateDisplay);
+        endTimeInput.addEventListener('change', updateDisplay);
+        progressTotalInput.addEventListener('change', () => {
+            updateSliderMax();
+            updateDisplay();
+        });
+
+        updateDisplay();
+        setInterval(updateDisplay, 10000);
+    </script>
+</body>
+</html>

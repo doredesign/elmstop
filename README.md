@@ -49,7 +49,7 @@ elmstop/
 
 ## 📞 Contact
 
-- **Email**: info@elmstop.com
+- **Email**: &#105;&#110;&#102;&#111;&#64;&#101;&#108;&#109;&#115;&#46;&#116;&#111;&#112;
 - **Website**: [elms.top](https://elms.top)
 
 ## 🚀 Local Development

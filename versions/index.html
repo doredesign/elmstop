@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elms Top - Design Versions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 60px;
+            opacity: 0.9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .version-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .version-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .version-card p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .version-card a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .version-card a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .js-indicator {
+            display: inline-block;
+            background: #ff6b6b;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 60px;
+        }
+        
+        .back-link a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Elms Top Design Versions</h1>
+        <p class="subtitle">Click any version below to see the different design themes</p>
+        
+        <div class="grid">
+            <div class="version-card">
+                <h3>Original</h3>
+                <p>The current hot gradient design with glass morphism effects and modern styling.</p>
+                <a href="../index.html">View Original</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Cyberpunk Terminal</h3>
+                <p>Dark hacker aesthetic with green terminal colors, scanning lines, and cyberpunk vibes.</p>
+                <a href="test-v1-cyberpunk.html">View Cyberpunk</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Nature & Earth</h3>
+                <p>Organic earth tones with natural imagery, serif fonts, and botanical elements.</p>
+                <a href="test-v2-nature.html">View Nature</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Ocean Deep</h3>
+                <p>Deep blue ocean theme with wave animations, aquatic colors, and fluid motion.</p>
+                <a href="test-v3-ocean.html">View Ocean</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Sunset Vibes</h3>
+                <p>Warm oranges and reds with sun imagery, vibrant energy, and tropical feel.</p>
+                <a href="test-v4-sunset.html">View Sunset</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Minimal Clean</h3>
+                <p>Ultra-minimal black and white design with clean typography and subtle borders.</p>
+                <a href="test-v5-minimal.html">View Minimal</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Neon Electric</h3>
+                <p>Electric purple and cyan neon effects with cyberpunk styling and glow animations.</p>
+                <a href="test-v6-neon.html">View Neon</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Corporate Pro</h3>
+                <p>Professional business theme with structured layout, corporate colors, and clean lines.</p>
+                <a href="test-v10-corporate.html">View Corporate</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Geometric Shapes <span class="js-indicator">JS</span></h3>
+                <p>Animated geometric polygons connecting like DataDog's design with mouse interaction.</p>
+                <a href="index-v7-geometric.html">View Geometric</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Particle System <span class="js-indicator">JS</span></h3>
+                <p>Floating particle system with trails, connections, and dynamic mouse interaction.</p>
+                <a href="index-v8-particles.html">View Particles</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Matrix Code <span class="js-indicator">JS</span></h3>
+                <p>Matrix-style falling green characters with terminal theme and mouse disruption.</p>
+                <a href="index-v9-matrix.html">View Matrix</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Starfield Dreams <span class="js-indicator">JS</span></h3>
+                <p>Original gradient colors with subtle starfield background. Stars drift gently with parallax mouse movement like distant galaxies.</p>
+                <a href="index-v11-starfield.html">View Starfield</a>
+            </div>
+            
+            <div class="version-card">
+                <h3>Parallax Stars <span class="js-indicator">JS</span></h3>
+                <p>5 distinct depth layers with inverse parallax movement. Closest stars move opposite to cursor with 40px max range, background stars stay fixed.</p>
+                <a href="index-v12-parallax.html">View Parallax</a>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="../index.html">← Back to Main Site</a>
+        </div>
+    </div>
+</body>
+</html>

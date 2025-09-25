@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tid Bits - Elms Top</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body class="tid-bits-page">
+  <header>
+    <h1>Elms Top</h1>
+    <h2>Tid Bits</h2>
+  </header>
+
+  <nav>
+    <a href="index.html" class="home-link">← Back to Home</a>
+  </nav>
+
+  <main>
+  <section id="tid-bits">
+    <h2>Projects & Tools</h2>
+    <div class="project-grid">
+      <a href="projects/mtg-timer/index.html" class="project-card">
+        <h3>Meeting Timer</h3>
+        <p>A simple timer for tracking meeting duration</p>
+      </a>
+      <a href="versions/index.html" class="project-card">
+        <h3>Design Versions</h3>
+        <p>View different theme variations of the site</p>
+      </a>
+    </div>
+  </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="current-year"></span> Elms Top. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>

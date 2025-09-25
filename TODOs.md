@@ -1,0 +1,1 @@
+- Stars still jump at page load. Also, when the mouse leaves the window at point x and re-joins at  point y, the stars jump. Instead, can we have the stars just stay where they are and move relative to the point y rather than point x?

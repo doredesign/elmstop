@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown Timer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.1s ease;
+    }
+
+    body.flashing {
+      animation: flashBackground 0.5s infinite;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 15px;
+      z-index: 10;
+      padding: 0 10px;
+    }
+
+    .inputs {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .input-group label {
+      font-size: 11px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+    }
+
+    .input-group input {
+      width: 70px;
+      height: 50px;
+      font-size: 24px;
+      text-align: center;
+      border: 2px solid #444;
+      background: #2a2a2a;
+      color: #fff;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: #4CAF50;
+    }
+
+    .timer-container {
+      position: fixed;
+      top: 5vh;
+      left: 0;
+      width: 100vw;
+      height: 80vmin;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .timer-container {
+        top: 2vh;
+        height: 75vmin;
+      }
+    }
+
+    .timer-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10vmin;
+      font-weight: 300;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      z-index: 5;
+    }
+
+    .pie-container {
+      width: 80vmin;
+      height: 80vmin;
+    }
+
+    @media (max-width: 768px) {
+      .pie-container {
+        width: 75vmin;
+        height: 75vmin;
+      }
+    }
+
+    svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .pie-background {
+      fill: none;
+      stroke: #2a2a2a;
+      stroke-width: 40;
+    }
+
+    .pie-progress {
+      fill: none;
+      stroke: #4CAF50;
+      stroke-width: 40;
+      stroke-linecap: butt;
+      transition: stroke 0.3s ease;
+      stroke-linejoin: miter;
+    }
+
+    button {
+      padding: 15px 30px;
+      height: 50px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.3s ease;
+      z-index: 10;
+      position: relative;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    @keyframes flashBackground {
+      0%, 100% {
+        background: #fff;
+      }
+      50% {
+        background: #f44336;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="timer-container">
+    <div class="pie-container">
+      <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+        <circle class="pie-background" cx="100" cy="100" r="80"></circle>
+        <circle class="pie-progress" cx="100" cy="100" r="80" id="progressCircle"></circle>
+      </svg>
+    </div>
+    <div class="timer-display" id="display">00:01:00</div>
+  </div>
+
+  <div class="controls">
+    <div class="inputs">
+      <div class="input-group">
+        <label>Hours</label>
+        <input type="number" id="hours" min="0" max="99" value="0">
+      </div>
+      <div class="input-group">
+        <label>Minutes</label>
+        <input type="number" id="minutes" min="0" max="59" value="1">
+      </div>
+      <div class="input-group">
+        <label>Seconds</label>
+        <input type="number" id="seconds" min="0" max="59" value="0">
+      </div>
+    </div>
+    <button id="controlBtn">Start</button>
+  </div>
+
+  <script>
+    let totalMilliseconds = 0;
+    let remainingMilliseconds = 0;
+    let startTime = null;
+    let interval = null;
+    let isRunning = false;
+    let isFinished = false;
+
+    const hoursInput = document.getElementById('hours');
+    const minutesInput = document.getElementById('minutes');
+    const secondsInput = document.getElementById('seconds');
+    const display = document.getElementById('display');
+    const controlBtn = document.getElementById('controlBtn');
+    const progressCircle = document.getElementById('progressCircle');
+    const inputs = document.querySelectorAll('input');
+
+    const circumference = 2 * Math.PI * 80;
+    progressCircle.style.strokeDasharray = circumference;
+    progressCircle.style.strokeDashoffset = 0;
+
+    function updateDisplay() {
+      const totalSeconds = Math.ceil(remainingMilliseconds / 1000);
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      display.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+      if (totalMilliseconds === 0) {
+        progressCircle.style.strokeDashoffset = 0;
+        return;
+      }
+
+      const progress = remainingMilliseconds / totalMilliseconds;
+      const offset = circumference * (1 - progress);
+      progressCircle.style.strokeDashoffset = offset;
+
+      // Color transition: green -> yellow -> red
+      const percentRemaining = (remainingMilliseconds / totalMilliseconds) * 100;
+      if (percentRemaining > 20) {
+        progressCircle.style.stroke = '#4CAF50'; // Green
+      } else if (percentRemaining > 10) {
+        progressCircle.style.stroke = '#FFC107'; // Yellow
+      } else {
+        progressCircle.style.stroke = '#f44336'; // Red
+      }
+    }
+
+    function start() {
+      if (isFinished) {
+        reset();
+        return;
+      }
+
+      if (!isRunning) {
+        if (startTime === null) {
+          // Starting fresh
+          const h = parseInt(hoursInput.value) || 0;
+          const m = parseInt(minutesInput.value) || 0;
+          const s = parseInt(secondsInput.value) || 0;
+
+          totalMilliseconds = (h * 3600 + m * 60 + s) * 1000;
+
+          if (totalMilliseconds === 0) return;
+
+          remainingMilliseconds = totalMilliseconds;
+          inputs.forEach(input => input.disabled = true);
+        }
+
+        startTime = Date.now();
+        isRunning = true;
+        controlBtn.textContent = 'Pause';
+
+        function tick() {
+          if (!isRunning) return;
+
+          const elapsed = Date.now() - startTime;
+          remainingMilliseconds = Math.max(0, remainingMilliseconds - elapsed);
+          startTime = Date.now();
+
+          updateDisplay();
+          updateProgress();
+
+          if (remainingMilliseconds <= 0) {
+            isRunning = false;
+            isFinished = true;
+            controlBtn.textContent = 'Reset';
+            document.body.classList.add('flashing');
+          } else {
+            requestAnimationFrame(tick);
+          }
+        }
+
+        requestAnimationFrame(tick);
+      } else {
+        // Pause
+        isRunning = false;
+        controlBtn.textContent = 'Resume';
+      }
+    }
+
+    function reset() {
+      isRunning = false;
+      isFinished = false;
+      remainingMilliseconds = 0;
+      totalMilliseconds = 0;
+      startTime = null;
+
+      inputs.forEach(input => input.disabled = false);
+      document.body.classList.remove('flashing');
+      progressCircle.style.stroke = '#4CAF50';
+
+      controlBtn.textContent = 'Start';
+
+      const h = parseInt(hoursInput.value) || 0;
+      const m = parseInt(minutesInput.value) || 0;
+      const s = parseInt(secondsInput.value) || 0;
+      remainingMilliseconds = (h * 3600 + m * 60 + s) * 1000;
+
+      updateDisplay();
+      updateProgress();
+    }
+
+    controlBtn.addEventListener('click', start);
+
+    // Update display when inputs change
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        if (!isRunning && !isFinished) {
+          const h = parseInt(hoursInput.value) || 0;
+          const m = parseInt(minutesInput.value) || 0;
+          const s = parseInt(secondsInput.value) || 0;
+          remainingMilliseconds = (h * 3600 + m * 60 + s) * 1000;
+          totalMilliseconds = remainingMilliseconds;
+          updateDisplay();
+          updateProgress();
+        }
+      });
+    });
+
+    // Initialize display
+    remainingMilliseconds = 60000; // 1 minute default
+    totalMilliseconds = 60000;
+    updateDisplay();
+    updateProgress();
+  </script>
+</body>
+
+</html>
